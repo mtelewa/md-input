@@ -1,0 +1,45 @@
+# The simulation file
+#--------------------
+
+# Initialize velocities --------------------------------
+
+# Set Zero velocity for solid
+velocity        group_solid set 0.0 0.0 0.0
+
+# Time integration --------------------------------
+
+# Integrate the solid atoms in time (Microcanonical ensemble)
+fix             nve group_solid nve
+# Profile-Biased Nose'-Hoover thermostat
+fix             nvt group_fluid nvt temp ${temp} ${temp} $(dt*100)
+compute         tempFluid group_fluid temp
+# Ensure that atoms do not drift during the simulation due to random perturbations
+fix             recenter group_surfL recenter INIT INIT INIT shift all
+
+# Load the upper wall and measure the virial Pressure --------------------------------
+
+include         blocks/system.in.virial
+include         blocks/system.in.loadUpper
+
+# Thermodynamic output --------------------------------
+
+thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
+thermo          ${thermo_out}
+thermo_modify   flush yes
+neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid   #  interactions between those atoms can be turned off to save needless computation
+timestep        ${timestep}
+
+fix             position all ave/atom 10 100 1000 x y z
+fix             velocity all ave/atom 10 100 1000 vx vy vz
+fix             force all ave/atom 10 100 1000 fx fy fz
+
+dump            load all netcdf 1000 out/force.nc id type x y z vx vy vz fx fy fz &
+							  f_position[1] f_position[2] f_position[3] &
+                                                          f_velocity[1] f_velocity[2] f_velocity[3] &
+                                                          f_force[1] f_force[2] f_force[3] &
+                                                          f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
+                                                          f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
+                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] f_Vi_avg
+run             1000000
+write_data      out/data.force nocoeff
+undump          load

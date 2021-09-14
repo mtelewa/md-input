@@ -1,0 +1,7 @@
+# Initialization file
+#---------------------
+boundary        p p m
+units           real
+atom_style      atomic
+pair_style      lj/cut 10.0
+pair_modify     shift yes
