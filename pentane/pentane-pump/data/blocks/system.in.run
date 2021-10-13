@@ -14,9 +14,6 @@ fix             recenter group_surfL recenter INIT INIT INIT shift all
 include         blocks/system.in.loadUpper
 include         blocks/system.in.virial
 
-thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump
-thermo          ${thermo_out}
-thermo_modify   flush yes
 neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid   #  interactions between those atoms can be turned off to save needless computation
 timestep        ${timestep}
 
@@ -68,6 +65,11 @@ elif "${couette}==1 && ${both}==1" then &
 "variable       vshear_half equal 0.5*${vshear}" &
 "velocity       group_surfL set -${vshear_half} 0.0 0.0 units box" &
 "velocity       group_surfU set ${vshear_half} 0.0 0.0 units box"
+
+
+thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fp v_fw v_fpump
+thermo          ${thermo_out}
+thermo_modify   flush yes
 
 
 run             5000000
