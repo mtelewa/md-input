@@ -1,6 +1,10 @@
     # The simulation file
     #--------------------
 
+    # Timestep settings
+    neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid
+    timestep        ${timestep}
+
     # Initialize velocities --------------------------------
 
     # Set Zero velocity for solid
@@ -29,20 +33,19 @@
 
     include         blocks/system.in.virial
 
+    # Average atomic properties
+    fix             position all ave/atom 10 100 ${thermo_out} x y z
+    fix             velocity all ave/atom 10 100 ${thermo_out} vx vy vz
+    fix             force all ave/atom 10 100 ${thermo_out} fx fy fz
+
     # Thermodynamic output --------------------------------
 
     thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
     thermo          ${thermo_out}
     thermo_modify   flush yes
-    neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid
-    timestep        ${timestep}
-
-    fix             position all ave/atom 10 100 1000 x y z
-    fix             velocity all ave/atom 10 100 1000 vx vy vz
-    fix             force all ave/atom 10 100 1000 fx fy fz
 
     dump            nvt all netcdf 1000 out/nvt.nc id type x y z vx vy vz fx fy fz &
-							   f_position[1] f_position[2] f_position[3] &
+							                               f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
                                                            f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &

@@ -65,6 +65,10 @@ write_once("In Run"){
     # The simulation file
     #--------------------
 
+    # Timestep settings
+    neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid
+    timestep        \$\{timestep\}
+
     # Initialize velocities --------------------------------
 
     # Set Zero velocity for solid
@@ -74,10 +78,10 @@ write_once("In Run"){
 
     # Forces in the upper wall (from interaction with the liquid)
     fix             fAtomU group_surfU store/force
-    fix             fAtomU_avg group_surfU ave/atom 10 100 1000 f_fAtomU[*]
+    fix             fAtomU_avg group_surfU ave/atom 10 100 \$\{thermo_out\} f_fAtomU[*]
 
     fix             fAtomL group_surfL store/force
-    fix             fAtomL_avg group_surfL ave/atom 10 100 1000 f_fAtomL[*]
+    fix             fAtomL_avg group_surfL ave/atom 10 100 \$\{thermo_out\} f_fAtomL[*]
 
     # Lower surface atoms do not experience any force (rigid)
     fix             rigid group_solid setforce 0.0 0.0 0.0
@@ -93,19 +97,18 @@ write_once("In Run"){
 
     include         blocks/system.in.virial
 
+    # Average atomic properties
+    fix             position all ave/atom 10 100 \$\{thermo_out\} x y z
+    fix             velocity all ave/atom 10 100 \$\{thermo_out\} vx vy vz
+    fix             force all ave/atom 10 100 \$\{thermo_out\} fx fy fz
+
     # Thermodynamic output --------------------------------
 
     thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
     thermo          \$\{thermo_out\}
     thermo_modify   flush yes
-    neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid
-    timestep        \$\{timestep\}
 
-    fix             position all ave/atom 10 100 1000 x y z
-    fix             velocity all ave/atom 10 100 1000 vx vy vz
-    fix             force all ave/atom 10 100 1000 fx fy fz
-
-    dump            nvt all netcdf 1000 out/nvt.nc id type x y z vx vy vz fx fy fz &
+    dump            nvt all netcdf \$\{thermo_out\} out/nvt.nc id type x y z vx vy vz fx fy fz &
 							   f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
@@ -131,9 +134,9 @@ write_once("In Virial"){
 
     # Get the virial pressure in the fluid
     compute         Vi group_fluid voronoi/atom                                     # Get the volume of voronoi cell and number of neighbors
-    fix             Vi_avg group_fluid ave/atom 10 100 1000 c_Vi[1]
+    fix             Vi_avg group_fluid ave/atom 10 100 \$\{thermo_out\} c_Vi[1]
 
     compute         Wi group_fluid stress/atom NULL
-    fix             Wi_avg group_fluid ave/atom 10 100 1000 c_Wi[1] c_Wi[2] c_Wi[3]
+    fix             Wi_avg group_fluid ave/atom 10 100 \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3]
 }
 # end of system setup
