@@ -1,0 +1,56 @@
+# LAMMPS Header file
+#-------------------
+
+# GEOMETRY -----------------
+variable        half_h equal lz/2.
+
+# Unit conversion & constants -----------------
+variable         N_to_kcalpermolA equal 1.4393263121*1e10
+variable         kcalpermolA_to_N equal 6.947694845598684e-11
+variable         A2_to_m2 equal 1e-20
+variable         mpa_to_kcalpermolA3 equal 0.00014393
+variable         kcalpermolA3_to_mpa equal 1/${mpa_to_kcalpermolA3}
+variable         atm_to_pa equal 101325
+variable 	     N_A equal 6.0221e23        # Avogadro's number (1/mol)
+
+# ATOMIC -----------------
+variable        nCHx index 5                                    # Pentane
+variable        mCH3 equal 15.03462
+variable        mCH2 equal 14.02667
+variable        mFluid equal (${nCHx}-2)*${mCH2}+2*${mCH3}
+variable        mSolid index 196.67                             # Atomic Mass of Gold
+variable        massAtomCH2 equal ${mCH2}/${N_A}
+variable        massAtomCH3 equal ${mCH3}/${N_A}
+
+# Operating conditions -----------------
+variable         temp equal 300                       # K
+#variable        press equal 98.2                     # atm
+variable         timestep index 1.0
+variable	     vshear index 30e-5			# A/fs
+
+# loading-----------------
+variable        Pext index 250                                                   # Applied pressure (MPa)
+#variable       C11 equal 192.34*0.14393                                        # Gold elastic constant (from GPa to KCal/(mol.A3)) (Phys. Rev. 111, 707)
+variable        pC equal 0.2                                                    # empirical cut-off parameter
+variable        wC equal 2*PI*${vshear}/lx                                      # estimation for cut-off frequency              [1/fs]
+variable        k equal 0.01                                                   # TO BE TESTED  (k=0.01 for pentane)
+variable        M_ps equal ${k}/(${wC}^2)*sqrt(1.0/(${pC}^2)-1.0)               # Mass of imaginary piston                      [KCal*fs^2/mol.A^2]
+variable        damper equal 2*sqrt(${k}*${M_ps})                               # Harmonic oscillator damper
+variable        get_virial index 0                                              # Virial check
+
+# Flow --------------
+variable        couette index 0          # 1: The wall(s) is/are sheared
+variable        both index 0             # 0: Only upper wall is sheared, 1: Both walls are sheared (opposite to each other)
+variable        ff index 0           # 1: Fixed force ensemble
+variable        smooth_tr index 0        # 1: computes a normalized coordinate vector for atoms in the pump
+variable        smooth_gauss index 0
+variable        fc index 0         # 1: Fixed current ensemble
+
+variable        pumpStart equal 0.0
+variable        pumpEnd equal 0.20*lx
+variable        pumplength equal ${pumpEnd}-${pumpStart}                    # Pump region length
+variable        pDiff index 5e6                                  # Pressure difference (outlet-inlet) in Pascals
+variable        jx_imposed index 0.023343455248
+
+# Sampling -----------------
+variable         thermo_out equal 1000
