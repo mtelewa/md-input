@@ -71,7 +71,7 @@ write_once("In Run"){
     thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
     thermo          \$\{thermo_out\}
     thermo_modify   flush yes
-    neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid
+    neigh_modify    every 1 delay 0 check yes
     timestep        \$\{timestep\}
 
     fix             position all ave/atom 10 100 1000 x y z
@@ -82,8 +82,6 @@ write_once("In Run"){
 							   f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
-                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
-                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
                                                            f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] f_Vi_avg
 
     run             10000
