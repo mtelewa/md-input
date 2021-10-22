@@ -109,7 +109,7 @@ write_once("In Run"){
     thermo_modify   flush yes
 
     dump            nvt all netcdf \$\{thermo_out\} out/nvt.nc id type x y z vx vy vz fx fy fz &
-							   f_position[1] f_position[2] f_position[3] &
+							                               f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
                                                            f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
