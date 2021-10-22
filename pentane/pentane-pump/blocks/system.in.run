@@ -53,7 +53,7 @@ if "${fc}==1" then &
 if "${couette}==1 && ${both}==0" then &
 "velocity       group_surfL set NULL NULL NULL" &
 "velocity       group_surfU set ${vshear} 0.0 0.0 units box" &
-elif "${couette}==1 && ${both}==1" then &
+elif "${couette}==1 && ${both}==1" &
 "variable       vshear_half equal 0.5*${vshear}" &
 "velocity       group_surfL set -${vshear_half} 0.0 0.0 units box" &
 "velocity       group_surfU set ${vshear_half} 0.0 0.0 units box"
