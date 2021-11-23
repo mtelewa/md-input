@@ -4,12 +4,12 @@
     # import molecule building block file 
     import 'pentane.lt' 
     
-    # Replicate the pentane, the value in [] is the no. of replicas (a) 
-    # the value in () is the offset (b) between replicas. 
-    # To avoid atoms creation outside of the box, a*b < xhi. Same for y and z. 
-    mol = new pentane   [35].move(10,0,0) 
-                     [7].move(0,4,0) 
-                     [12].move(0,0,3) 
+    # Replicate the pentane, the value in [] is the no. of replicas (Nf) 
+    # the value in () is the offset between replicas. 
+    # To avoid atoms creation outside of the box, Nf*offset < xhi(look at the end of this file). Same for y and z. 
+    mol = new pentane    [35].move(10,0,0) 
+                         [7].move(0,4,0) 
+                         [12].move(0,0,3) 
     #                    ^          ^ ^ ^ 
     #                    Nf      offsetX,offsetY,offsetZ 
     # delete mol[14][0-9][0-8] 
