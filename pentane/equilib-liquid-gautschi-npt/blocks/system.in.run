@@ -1,0 +1,48 @@
+    # The simulation file
+    #--------------------
+
+    # Timestep settings
+    neigh_modify    every 1 delay 0 check yes
+    timestep        ${timestep}
+
+    # Initialize velocities --------------------------------
+
+    # Initialize fluid atoms velocities
+    velocity        group_fluid create ${temp} 4928459 dist gaussian
+
+    # Time integration --------------------------------
+
+    # Fluid is thermostated with Berendsen thermostat (1st equilibration)
+    fix             nveF group_fluid nve/limit 0.1
+    fix             berendsen group_fluid temp/berendsen ${temp} ${temp} $(dt*100)
+    compute         tempFluid group_fluid temp
+
+    include         blocks/system.in.virial
+
+    # Average atomic properties
+    fix             position all ave/atom 10 100 ${thermo_out} x y z
+    fix             velocity all ave/atom 10 100 ${thermo_out} vx vy vz
+    fix             force all ave/atom 10 100 ${thermo_out} fx fy fz
+
+    # Thermodynamic output --------------------------------
+
+    thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
+    thermo          ${thermo_out}
+    thermo_modify   flush yes
+
+    dump            npt all netcdf ${thermo_out} out/npt.nc id type x y z vx vy vz fx fy fz &
+							   f_position[1] f_position[2] f_position[3] &
+                                                           f_velocity[1] f_velocity[2] f_velocity[3] &
+                                                           f_force[1] f_force[2] f_force[3] &
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] f_Vi_avg
+
+    run             10000
+    unfix           nveF
+    unfix           berendsen
+
+    # Fluid is thermostated with Nose-Hoover thermostat (2nd equilibration) and Gauchi integrator
+    timestep	    1
+    fix             barostat group_fluid npt/trigo temp ${temp} ${temp} 100.0 iso ${press} ${press} 1000.0
+
+    run             1000000
+    write_data      out/data.npt nocoeff
