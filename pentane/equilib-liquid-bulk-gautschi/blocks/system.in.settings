@@ -1,0 +1,16 @@
+    # Potential definition file
+    #--------------------------
+
+    # Pair-wise parameters
+    variable        sigmaCH3 equal 3.75  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+    variable        epsCH3 equal 0.195  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+    variable        sigmaCH2 equal 3.93  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+    variable        epsCH2 equal 0.0914  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+    variable        eps_f equal (2*${mCH3}*${epsCH3}+(${nCHx}-2)*${mCH2}*${epsCH2})/${mFluid}
+
+    pair_coeff      1 1 ${epsCH3} ${sigmaCH3}
+    pair_coeff      2 2 ${epsCH2} ${sigmaCH2}
+
+    bond_coeff      1 1000 1.54
+    angle_coeff     1 124.199 114
+    dihedral_coeff  1 1.411 -0.271 3.145 0

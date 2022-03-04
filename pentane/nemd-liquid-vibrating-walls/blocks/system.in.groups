@@ -1,0 +1,30 @@
+    # Group definition file
+    #----------------------
+
+    group           group_fluid type 1 2
+    group           group_solid type 3
+
+    # The walls
+    region          lower block INF INF INF INF INF ${half_h} units box
+    region          upper block INF INF INF INF ${half_h} INF units box
+    group           group_lower region lower
+    group           group_upper region upper
+    group           group_surfL intersect group_solid group_lower
+    group           group_surfU intersect group_solid group_upper
+
+    variable	    SurfUcom equal xcm(group_surfU,z)
+
+    region          rigidL block INF INF INF INF INF ${rigidL_end}
+    region          rigidU block INF INF INF INF ${SurfUcom} INF
+
+    group           group_rigidL region rigidL
+    group           group_rigidU region rigidU
+    group           group_rigid union group_rigidL group_rigidU
+
+    group           group_walls union group_surfU group_surfL
+    group           group_vibrating subtract group_walls group_rigid
+
+    # Pump region
+    region          pump block ${pumpStart} ${pumpEnd} INF INF INF INF units box
+    group           group_pump_dyn dynamic group_fluid region pump
+    variable        nAtomsPump equal count(group_pump_dyn)
