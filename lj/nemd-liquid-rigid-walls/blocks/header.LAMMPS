@@ -23,7 +23,7 @@ variable         massAtomInG equal ${mFluid}/${N_A}         # Mass of one argon 
 variable         temp equal 100                       # K
 #variable        press equal 98.2                     # atm
 variable         timestep index 3.0
-variable	     vshear equal 0.0003
+variable	     vshear index 30e-5
 
 # loading-----------------
 variable        Pext index 100                                                   # Applied pressure (MPa)
