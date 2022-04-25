@@ -3,7 +3,7 @@
 
 # GEOMETRY -----------------
 variable        half_h equal lz/2.
-variable        rigidL_end equal 0.098*lz
+variable        rigidL_end equal 0.07*lz
 variable        rigidU_begin equal 0.9*lz
 
 # Unit conversion & constants -----------------

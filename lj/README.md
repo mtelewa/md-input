@@ -17,3 +17,8 @@ To preform the loading, one needs a **data.nvt** that is obtained from the previ
 # NEMD simulaion
 
 The final step in the simulation. Could be a simualtion of shear-driven, pressure-driven or both. One needs a **data.force** from the loading.
+
+# General Notes
+
+The fluid interact with the walls with the truncated LJ potential or the WCA potential. This defines a fluid slipping against the walls.
+To change that, in 'system.in.settings', remove the 3.82 to simualte the full LJ potential or change the pair coeffs parameters.

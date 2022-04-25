@@ -1,0 +1,60 @@
+    # The simulation file
+    #--------------------
+
+    # Initialize velocities --------------------------------
+
+    # Set Zero velocity for solid
+    velocity        group_solid set 0.0 0.0 0.0
+    # Initialize fluid atoms velocities
+    velocity        group_fluid create ${temp} 4928459 dist gaussian
+
+    # Forces in the upper wall (from interaction with the liquid)
+    fix             fAtomU group_surfU store/force
+    fix             fAtomU_avg group_surfU ave/atom 10 100 1000 f_fAtomU[*]
+
+    fix             fAtomL group_surfL store/force
+    fix             fAtomL_avg group_surfL ave/atom 10 100 1000 f_fAtomL[*]
+
+    # Lower surface atoms do not experience any force (rigid)
+    fix             rigid group_solid setforce 0.0 0.0 0.0
+
+    # Time integration --------------------------------
+
+    # Solid atoms sample the Microcanonical ensemble
+    fix             nveS group_solid nve
+    # Fluid is thermostated with Berendsen thermostat (1st equilibration)
+    fix             nveF group_fluid nve/limit 0.1
+    fix             berendsen group_fluid temp/berendsen ${temp} ${temp} $(dt*100)
+    compute         tempFluid group_fluid temp
+
+    include         blocks/system.in.virial
+
+    # Thermodynamic output --------------------------------
+
+    thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
+    thermo          ${thermo_out}
+    thermo_modify   flush yes
+    neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid
+    timestep        ${timestep}
+
+    fix             position all ave/atom 10 100 1000 x y z
+    fix             velocity all ave/atom 10 100 1000 vx vy vz
+    fix             force all ave/atom 10 100 1000 fx fy fz
+
+    dump            nvt all netcdf 1000 out/nvt.nc id type x y z vx vy vz fx fy fz &
+							                               f_position[1] f_position[2] f_position[3] &
+                                                           f_velocity[1] f_velocity[2] f_velocity[3] &
+                                                           f_force[1] f_force[2] f_force[3] &
+                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
+                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] f_Vi_avg
+
+    run             10000
+    unfix           nveF
+    unfix           berendsen
+
+    # Fluid is thermostated with Nose-Hoover thermostat (2nd equilibration)
+    fix             nvt group_fluid nvt temp ${temp} ${temp} $(dt*100)
+
+    run             500000
+    write_data      out/data.nvt nocoeff

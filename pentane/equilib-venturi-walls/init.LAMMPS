@@ -1,0 +1,86 @@
+# Initialize gold walls
+#----------------------
+
+include		   blocks/system.in.init
+
+variable       xlength equal 399.76
+variable       Boffset equal 1.0                          # Initial offset bet. the block and the simulation box
+variable       zlength equal 85.00
+variable       upper equal ${zlength}-${Boffset}
+
+# Create Box --------------------------------
+region          box block 0.0 399.76 0.0 28.85 -1.00 85.00 units box
+create_box      1 box
+
+# Create Walls ------------------------------
+# First build the flat Walls
+lattice         fcc ${ls} orient x -1 2 -1 orient y -1 0 1 orient z 1 1 1
+
+region          surfL block INF INF INF INF -1e-5 7.00 units box
+region          surfU block INF INF INF INF 77.00 84.00 units box
+
+create_atoms    1 region surfU
+create_atoms    1 region surfL
+
+# Create Sine Wave (variable names from: https://www.desmos.com/calculator/w9jrdpvsmk)
+variable        th equal 4.711                                    # wall thickness
+variable        k equal v_zlength-2*${th}-2*${Boffset}            # gap height
+
+# variables to change: Amplitude, Width and x-shift
+variable        amplitude index 1
+variable        width index 0.95
+variable        xshift index 0.04
+
+variable        a equal v_amplitude*v_zlength-2*${th}-2*${Boffset}         # amplitude as a factor of zlength, amplitude is the gap height
+variable        b equal v_width*v_xlength                                  # width of the sine wave
+variable        h equal v_xshift*v_xlength                                 # phase shift of the wave
+# iteration parameters
+variable        xx internal 0.0
+variable        zz internal 0.0
+
+# Lower Wall
+variable        v equal "(v_a * sin((v_xx-v_h)*PI / v_b) + v_th - v_zz ) > 0.0"
+create_atoms    1 box var v set x xx set z zz
+
+variable        surfL_conv_end equal 0.3*lz
+variable        surfU_conv_end equal 0.68*lz
+variable        surfU_div_begin equal 77.00
+
+region          cut1 block INF INF INF INF ${surfL_conv_end} ${surfU_div_begin} units box
+group           group_cut1 region cut1
+delete_atoms    group group_cut1 compress no # Keep the atom ids
+
+# group           group_upper region empty2
+# group           group_delete union group_middle group_upper
+
+# Upper Wall
+variable        q equal "(v_a * sin((v_xx-v_h+v_b)*PI / v_b) + (v_th+v_k) - v_zz ) < 0.0 "
+create_atoms    1 box var q set x xx set z zz
+
+region          cut2 block INF INF INF INF ${surfL_conv_end} ${surfU_conv_end} units box
+region          cut3 block INF INF INF INF ${upper} INF units box
+group           group_cut2 region cut2
+group           group_cut3 region cut3
+group           group_cut23 union group_cut2 group_cut3
+delete_atoms    group group_cut23 compress no # Keep the atom ids
+
+# Make a step at the outlet
+variable        xcut_begin equal 0.9*lx
+variable        thick equal ${th}+1
+region          cut4 block ${xcut_begin} INF INF INF ${thick} ${surfU_div_begin} units box
+group           group_cut4 region cut4
+delete_atoms    group group_cut4 compress no # Keep the atom ids
+
+mass            1 ${mSolid}
+
+variable        sigmaCH3 equal 3.75  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+variable        epsCH3 equal 0.195  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+variable        sigmaCH2 equal 3.93  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+variable        epsCH2 equal 0.0914  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
+variable        eps_f equal (2*${mCH3}*${epsCH3}+(${nCHx}-2)*${mCH2}*${epsCH2})/${mFluid}
+variable        sigma_s equal 2.655
+variable        eps_s equal ${eps_f}*25
+
+pair_coeff      1 1 ${eps_s} ${sigma_s}
+
+write_data	    moltemp/data.init

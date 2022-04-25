@@ -1,0 +1,20 @@
+# LAMMPS script for NEMD flow
+#----------------------------
+
+# Init Section -----------------
+include         blocks/system.in.init
+
+# Atom Data Section -----------------
+read_data       blocks/data.force
+
+# Header file -----------------
+include 	    blocks/header.LAMMPS
+
+# Groups Section -----------------
+include         blocks/system.in.groups
+
+# Settings Section -----------------
+include         blocks/system.in.settings
+
+# Run Section -----------------
+include         blocks/system.in.run

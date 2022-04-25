@@ -1,0 +1,50 @@
+# Pentane topology file
+#----------------------
+
+pentane {
+
+  ### LAMMPS commands for initialization
+  ### (These can be overridden later.)
+
+  #write_once("In Settings") {
+  #  pair_coeff @atom:CH3 @atom:CH3 0.195 3.75
+  #  pair_coeff @atom:CH2 @atom:CH2 0.0914 3.93
+  #  bond_coeff @bond:saturated 1000 1.54
+  #  angle_coeff @angle:backbone 124.199 114
+  #  dihedral_coeff @dihedral:backbone 1.411 -0.271 3.145 0
+  #}
+
+  ### DATA sections
+
+  write_once("Data Masses") {
+    @atom:CH3 15.0346
+    @atom:CH2 14.0267
+  }
+
+  write("Data Atoms") {
+    $atom:CH3_1 $mol:m1 @atom:CH3 -2.536  -0.311   0.047
+    $atom:CH2_1 $mol:m1 @atom:CH2 -1.249   0.421  -0.326
+    $atom:CH2_2 $mol:m1 @atom:CH2 -0.027  -0.348   0.199
+    $atom:CH2_3 $mol:m1 @atom:CH2  1.261   0.350  -0.243
+    $atom:CH3_2 $mol:m1 @atom:CH3  2.484  -0.389   0.322
+  }
+
+  write("Data Bonds") {
+    $bond:bond1 @bond:saturated $atom:CH3_1 $atom:CH2_1
+    $bond:bond2 @bond:saturated $atom:CH2_1 $atom:CH2_2
+    $bond:bond3 @bond:saturated $atom:CH2_2 $atom:CH2_3
+    $bond:bond4 @bond:saturated $atom:CH2_3 $atom:CH3_2
+  }
+
+  write("Data Angles") {
+    $angle:angle1 @angle:backbone $atom:CH3_1 $atom:CH2_1 $atom:CH2_2
+    $angle:angle2 @angle:backbone $atom:CH2_1 $atom:CH2_2 $atom:CH2_3
+    $angle:angle3 @angle:backbone $atom:CH2_2 $atom:CH2_3 $atom:CH3_2
+  }
+
+  write("Data Dihedrals") {
+    $dihedral:dihedral1 @dihedral:backbone $atom:CH3_1 $atom:CH2_1 $atom:CH2_2 $atom:CH2_3
+    $dihedral:dihedral2 @dihedral:backbone $atom:CH2_1 $atom:CH2_2 $atom:CH2_3 $atom:CH3_2
+  }
+
+} # end of "pentane" type definition

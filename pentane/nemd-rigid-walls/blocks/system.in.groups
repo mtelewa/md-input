@@ -1,0 +1,28 @@
+    # Group definition file
+    #----------------------
+
+    group           group_fluid type 1 2
+    group           group_solid type 3
+
+    # The walls
+    region          lower block INF INF INF INF INF ${half_h} units box
+    region          upper block INF INF INF INF ${half_h} INF units box
+    group           group_lower region lower
+    group           group_upper region upper
+    group           group_surfL intersect group_solid group_lower
+    group           group_surfU intersect group_solid group_upper
+
+    # Pump region
+    region          pump block ${pumpStart} ${pumpEnd} INF INF INF INF units box
+    group           group_pump_dyn dynamic group_fluid region pump
+    variable        nAtomsPump equal count(group_pump_dyn)
+
+    # Stable region
+    variable         stableStartX equal 0.4*lx
+    variable         stableEndX equal 0.8*lx
+    variable         stableLength equal ${stableEndX}-${stableStartX}
+
+    region          stable block ${stableStartX} ${stableEndX} INF INF INF INF units box
+    group           group_stable_dyn dynamic group_fluid region stable
+    variable        nAtomsStable equal count(group_stable_dyn)
+
