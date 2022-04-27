@@ -50,7 +50,7 @@
                                                            f_force[1] f_force[2] f_force[3] &
                                                            f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                            f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] f_Vi_avg
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] #f_Vi_avg
 
     run             10000
     unfix           nveF

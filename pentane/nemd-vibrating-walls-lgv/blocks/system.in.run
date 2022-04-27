@@ -63,7 +63,11 @@ elif "${couette}==1 && ${both}==1" &
 
 
 # Thermodynamic Output --------------------------------
-thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fp v_fw v_fpump
+if "${ff}==1 || ${fc}==1" then &
+"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fw v_fp v_fpump" &
+else &
+"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump"
+
 thermo          ${thermo_out}
 thermo_modify   flush yes
 
@@ -73,7 +77,7 @@ dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy v
                                                           f_force[1] f_force[2] f_force[3] &
                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] f_Vi_avg
+                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
 
 
 run             5000000
