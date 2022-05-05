@@ -61,7 +61,7 @@ elif "${couette}==1 && ${both}==1" &
 
 
 # Thermodynamic Output --------------------------------
-if "${ff}==1 || ${fc}==1" then &
+if "${ff}==1" then &
 "thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fw v_fp v_fpump" &
 else &
 "thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump"
