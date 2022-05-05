@@ -12,10 +12,19 @@ fix             nveF group_fluid nve
 fix		nveS group_solid nve
 
 # Profile-Biased thermostating
-fix             nvt group_vibrating langevin ${temp} ${temp} $(dt*100) 154323
+fix             nvt group_vibrating langevin ${temp} ${temp} $(dt*100) 154323 tally yes
 compute         tempFluid group_fluid temp
 # Ensure that atoms do not drift during the simulation due to random perturbations
 fix             recenter group_surfL recenter INIT INIT INIT shift all
+
+# Heat flux computation (Post-processing)
+compute         KE group_fluid ke/atom
+compute         PE group_fluid pe/atom
+compute         W group_fluid centroid/stress/atom NULL virial
+variable        TE atom c_KE+c_PE
+
+fix             te group_fluid ave/atom 10 100 ${thermo_out} v_TE[1] v_TE[2] v_TE[3]
+fix             W group_fluid ave/atom 10 100 ${thermo_out} c_W[*]
 
 include         blocks/system.in.loadUpper
 include         blocks/system.in.virial
@@ -64,9 +73,9 @@ elif "${couette}==1 && ${both}==1" &
 
 # Thermodynamic Output --------------------------------
 if "${ff}==1" then &
-"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fw v_fp v_fpump" &
+"thermo_style    custom step c_tempFluid f_nvt ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fw v_fp v_fpump" &
 else &
-"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump"
+"thermo_style    custom step c_tempFluid f_nvt ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump"
 
 thermo          ${thermo_out}
 thermo_modify   flush yes
@@ -77,8 +86,7 @@ dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy v
                                                           f_force[1] f_force[2] f_force[3] &
                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
-
+                                                          f_te[*] f_W[*] f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
 
 run             5000000
 write_data	    out/data.stabilize nocoeff
