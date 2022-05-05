@@ -1,0 +1,22 @@
+#!/bin/bash
+#MSUB -l nodes=4:ppn=20
+#MSUB -q  
+#MSUB -l walltime=2:00:00:00
+#MSUB -l mem=6000mb
+#MSUB -v MPIRUN_OPTIONS="--bind-to core --map-by core -report-bindings"
+#MSUB -o 
+#MSUB -v EXECUTABLE=./lmp
+#MSUB -N vs30pbt
+
+#export KMP_AFFINITY=compact,1,0
+
+set -e
+
+ml system/modules/testing
+ml mpi/openmpi/4.0-gnu-9.2
+ml tools/singularity/3.8
+
+printenv
+
+cd ${MOAB_SUBMITDIR}
+mpirun --bind-to core --map-by core -report-bindings singularity run --bind $HOME --bind /work/ws/nemo/ka_lr1762-my_workspace-0 --pwd=$PWD $HOME/lammps.sif -in $(pwd)/flow.LAMMPS -v ff 1 -v pDiff 250e6
