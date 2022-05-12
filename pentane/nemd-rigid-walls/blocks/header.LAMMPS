@@ -47,7 +47,10 @@ variable        smooth_gauss index 0
 variable        fc index 0         # 1: Fixed current ensemble
 
 variable        pumpStart equal 0.0
-variable        pumpEnd equal 0.20*lx
+if "${smooth_tr}==1" then &
+"variable        pumpEnd equal 0.20*lx*(15/8)" &
+else &
+"variable        pumpEnd equal 0.20*lx"
 variable        pumplength equal ${pumpEnd}-${pumpStart}                    # Pump region length
 variable        pDiff index 5e6                                  # Pressure difference (outlet-inlet) in Pascals
 variable        jx_imposed index 0.023343455248
