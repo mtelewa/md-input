@@ -34,9 +34,10 @@ fix             position all ave/atom 10 100 ${thermo_out} x y z
 fix             velocity all ave/atom 10 100 ${thermo_out} vx vy vz
 fix             force all ave/atom 10 100 ${thermo_out} fx fy fz
 
-# Modified Biased thermostating (switch off the streaming velocity off)
-# compute         pbt group_fluid temp/partial 0 1 0
-# fix_modify      nvt temp pbt                      # exclude the x-velocity component from Temperature computation
+# Modified Biased thermostating (switch off the x-component velocity of the walls (for shear-driven simulations only))
+if "${couette}==1 || ${both}==1" then &
+"compute         pbt group_vibrating temp/partial 0 1 0" &
+"fix_modify      nvt temp pbt"
 
 # Get the channel thickness
 variable        thickness equal (bound(group_fluid,zmax)-bound(group_fluid,zmin)+bound(group_surfU,zmin)-bound(group_surfL,zmax))/2
