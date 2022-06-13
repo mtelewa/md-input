@@ -26,7 +26,7 @@ variable        massAtomCH3 equal ${mCH3}/${N_A}
 variable         temp equal 300                       # K
 #variable        press equal 98.2                     # atm
 variable         timestep index 1.0
-variable	     vshear equal 0.0003
+variable	     vshear index 0.0003
 
 # loading-----------------
 variable        Pext index 250                                                   # Applied pressure (MPa)
