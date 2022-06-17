@@ -83,4 +83,4 @@ variable        eps_s equal ${eps_f}*25
 
 pair_coeff      1 1 ${eps_s} ${sigma_s}
 
-write_data	    moltemp/data.init
+write_data	    moltemp/data.init nocoeff

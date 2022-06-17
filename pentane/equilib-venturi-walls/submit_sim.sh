@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=4
 #SBATCH --ntasks-per-node=20
-#SBATCH --time=4:00:00
+#SBATCH --time=2:00:00
 #SBATCH --partition=multiple
 #SBATCH --output=cluster.out
 #SBATCH --error=cluster.err
