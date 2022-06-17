@@ -1,0 +1,6 @@
+    #  The Virial profile
+    #--------------------
+
+    # Get the virial pressure in the fluid
+    compute         Wi group_fluid stress/atom NULL
+    fix             Wi_avg group_fluid ave/atom ${Nevery} ${Nrepeat} ${thermo_out} c_Wi[1] c_Wi[2] c_Wi[3]

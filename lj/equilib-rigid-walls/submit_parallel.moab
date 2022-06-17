@@ -1,0 +1,20 @@
+#!/bin/bash
+#MSUB -l nodes=3:ppn=20
+#MSUB -q  
+#MSUB -l walltime=6:00:00
+#MSUB -l mem=6000mb
+#MSUB -v MPIRUN_OPTIONS="--bind-to core --map-by core -report-bindings"
+#MSUB -o 
+#MSUB -v EXECUTABLE=./lmp_mpi
+#MSUB -N l36-eq
+
+export KMP_AFFINITY=compact,1,0
+
+module load system/modules/deprecated
+module use /work/ws/nemo/fr_lp1029-IMTEK_SIMULATION-0/modulefiles
+module load mpi/openmpi/3.1-gnu-7.3 
+
+printenv
+
+cd ${MOAB_SUBMITDIR}
+mpirun --bind-to core --map-by core -report-bindings lmp_mpi -i $(pwd)/equilib.LAMMPS

@@ -1,0 +1,30 @@
+# Gold (111) topology file
+#-------------------------
+
+gold {
+
+  ### LAMMPS commands for initialization
+  ### (These can be overridden later.)
+
+  #write_once("In Settings") {
+  #  pair_coeff @atom:au @atom:au 3.36442 2.655
+  #}
+
+
+  ### DATA sections
+
+  write_once("Data Masses") {
+    @atom:au 196.67
+  }
+
+  write("Data Atoms") {
+    $atom:au_1 @atom:au    0.000    0.000    0.000
+    $atom:au_2 @atom:au    3.331    0.000    2.356
+    $atom:au_3 @atom:au    2.498    1.442    0.000
+    $atom:au_4 @atom:au    0.833    1.442    2.356
+    $atom:au_5 @atom:au    4.164    1.442    4.711
+    $atom:au_6 @atom:au    1.666    0.000    4.711
+
+  }
+
+} # end of "gold" type definition

@@ -1,0 +1,34 @@
+# Argon (LJ) topology file
+#----------------------
+
+lj {
+
+  ### LAMMPS commands for initialization
+  ### (These can be overridden later.)
+
+
+  # write_once("In Init") {
+  #   atom_style molecular
+  # }
+  #
+  # write_once("In Settings") {
+  #   pair_coeff @atom:lj @atom:lj 0.234888 3.405
+  # }
+
+
+  ### DATA sections
+
+
+  write_once("Data Masses") {
+    @atom:lj_atom 39.94
+  }
+
+  write("Data Atoms") {
+    $atom:lj_1 @atom:lj_atom	0.000    0.000    0.000
+    $atom:lj_2 @atom:lj_atom	2.628    2.628    0.000
+    $atom:lj_3 @atom:lj_atom	0.000    2.628    2.628
+    $atom:lj_4 @atom:lj_atom	2.628    0.000    2.628
+
+  }
+
+} # end of "lj" type definition

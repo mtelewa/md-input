@@ -1,0 +1,10 @@
+    # Potential definition file
+    #--------------------------
+
+    # Pair-wise parameters
+    variable        eps_f equal 0.234888                        # Well depth of the LJ fluid (Kcal/mol)
+    variable        sigma_f equal 3.405                                 # Van der Waals radius of the LJ fluid (A)
+    variable        eps_s equal ${eps_f}*0.01                   # Well depth of the gold (Kcal/mol)
+    variable        sigma_s equal 2.655                                 # Van der Waals radius of the gold (A)
+
+    pair_coeff      1 1 ${eps_f} ${sigma_f}

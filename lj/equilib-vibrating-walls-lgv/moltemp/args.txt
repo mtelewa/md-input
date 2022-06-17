@@ -1,0 +1,1 @@
+Parameters : Namespace(nUnitsX=24, nUnitsY=10, nUnitsZ=2, h=40.0, density=1.4, name='lj', code='moltemp')
