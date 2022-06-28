@@ -13,7 +13,8 @@ fix             nve group_solid nve
 fix             nvt group_fluid nvt temp ${temp} ${temp} $(dt*100)
 compute         tempFluid group_fluid temp
 # Ensure that atoms do not drift during the simulation due to random perturbations
-fix             recenter group_surfL recenter INIT INIT INIT shift all
+if "${couette}==0" then &
+"fix             recenter group_surfL recenter INIT INIT INIT shift all"
 
 include         blocks/system.in.loadUpper
 include         blocks/system.in.virial
@@ -66,8 +67,8 @@ if "${fc}==1" then &
 
 #------------Couette flow -----------------#
 if "${couette}==1 && ${both}==0" then &
-"velocity       group_surfL set NULL NULL NULL" &
-"velocity       group_surfU set ${vshear} 0.0 0.0 units box" &
+"velocity       group_surfU set NULL NULL NULL" &
+"velocity       group_surfL set ${vshear} 0.0 0.0 units box" &
 elif "${couette}==1 && ${both}==1" &
 "unfix		recenter" &
 "variable       vshear_half equal 0.5*${vshear}" &
@@ -89,7 +90,8 @@ dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy v
                                                           f_force[1] f_force[2] f_force[3] &
                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
+                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
+					                  f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
 
 
