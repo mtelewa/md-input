@@ -33,7 +33,7 @@ variable        Pext index 250                                                  
 #variable       C11 equal 192.34*0.14393                                        # Gold elastic constant (from GPa to KCal/(mol.A3)) (Phys. Rev. 111, 707)
 variable        pC equal 0.2                                                    # empirical cut-off parameter
 variable        wC equal 2*PI*${vshear}/lx                              # estimation for cut-off frequency              [1/fs]
-variable        k equal 0.005                                                  # TO BE TESTED  (k=0.01 for pentane)
+variable        k equal 0.0005                                                  # TO BE TESTED  (k=0.01 for pentane)
 variable        M_ps equal ${k}/(${wC}^2)*sqrt(1.0/(${pC}^2)-1.0)               # Mass of imaginary piston                      [KCal*fs^2/mol.A^2]
 variable        damper equal 2*sqrt(${k}*${M_ps})                               # Harmonic oscillator damper
 
