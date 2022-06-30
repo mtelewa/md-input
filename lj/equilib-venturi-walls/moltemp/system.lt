@@ -95,7 +95,7 @@ write_once("In Run"){
 
     # Thermodynamic output --------------------------------
 
-    thermo_style    custom step c_tempFluid c_tempWalls ke epair ebond eangle edihed eimp pe etotal density vol press
+    thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
     thermo          \$\{thermo_out\}
     thermo_modify   flush yes
 

@@ -32,4 +32,7 @@ variable	    vshear equal 0.0
 variable        respa_style index 0                  # RESPA style run
 
 # Sampling ----------
-variable        thermo_out equal 1000
+variable        Nevery equal 10
+variable        Nrepeat equal 100
+variable        thermo_out equal ${Nevery}*${Nrepeat}
+

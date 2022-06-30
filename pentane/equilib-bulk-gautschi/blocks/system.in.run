@@ -34,7 +34,7 @@
 							   f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
-                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] 
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
 
     run             10000
     unfix           nveF
@@ -42,7 +42,13 @@
 
     # Fluid is thermostated with Nose-Hoover thermostat (2nd equilibration) and Gauchi integrator
     timestep	    1
+    # NVT (isochore)
+    #fix             trigo group_fluid trigonometric
+    #fix             nvt group_fluid nvt temp ${temp} ${temp} $(dt*100)
+    # NPT (isotherm)
     fix             barostat group_fluid npt/trigo temp ${temp} ${temp} 100.0 iso ${press} ${press} 1000.0
 
     run             1000000
+    #write_data      out/data.nvt nocoeff
     write_data      out/data.npt nocoeff
+

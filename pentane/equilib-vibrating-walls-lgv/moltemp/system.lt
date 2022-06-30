@@ -91,10 +91,10 @@ write_once("In Run"){
 
     # Forces in the upper wall (from interaction with the liquid)
     fix             fAtomU group_surfU store/force
-    fix             fAtomU_avg group_surfU ave/atom 10 100 \$\{thermo_out\} f_fAtomU[*]
+    fix             fAtomU_avg group_surfU ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} f_fAtomU[*]
 
     fix             fAtomL group_surfL store/force
-    fix             fAtomL_avg group_surfL ave/atom 10 100 \$\{thermo_out\} f_fAtomL[*]
+    fix             fAtomL_avg group_surfL ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} f_fAtomL[*]
 
     # Rigid atoms do not experience any force
     fix             rigid group_rigid setforce 0.0 0.0 0.0
@@ -114,9 +114,9 @@ write_once("In Run"){
     include         blocks/system.in.virial
 
     # Average atomic properties
-    fix             position all ave/atom 10 100 \$\{thermo_out\} x y z
-    fix             velocity all ave/atom 10 100 \$\{thermo_out\} vx vy vz
-    fix             force all ave/atom 10 100 \$\{thermo_out\} fx fy fz
+    fix             position all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} x y z
+    fix             velocity all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} vx vy vz
+    fix             force all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} fx fy fz
 
     # Thermodynamic output --------------------------------
 
@@ -130,7 +130,8 @@ write_once("In Run"){
                                                            f_force[1] f_force[2] f_force[3] &
                                                            f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                            f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
+							   f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
     run             60000
 
@@ -147,6 +148,6 @@ write_once("In Virial"){
 
     # Get the virial pressure in the fluid
     compute         Wi group_fluid stress/atom NULL
-    fix             Wi_avg group_fluid ave/atom 10 100 \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3]
+    fix             Wi_avg group_fluid ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3] c_Wi[4] c_Wi[5] c_Wi[6]
 }
 # end of system setup

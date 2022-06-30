@@ -27,9 +27,9 @@ include         blocks/system.in.virial
 include         blocks/system.in.loadUpper
 
 # Average atomic properties
-fix             position all ave/atom 10 100 ${thermo_out} x y z
-fix             velocity all ave/atom 10 100 ${thermo_out} vx vy vz
-fix             force all ave/atom 10 100 ${thermo_out} fx fy fz
+fix             position all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} x y z
+fix             velocity all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} vx vy vz
+fix             force all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} fx fy fz
 
 
 # Thermodynamic output --------------------------------

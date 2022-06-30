@@ -56,4 +56,7 @@ variable        pDiff index 5e6                                  # Pressure diff
 variable        jx_imposed index 0.023343455248
 
 # Sampling -----------------
-variable         thermo_out equal 1000
+variable        Nevery equal 10
+variable        Nrepeat equal 100
+variable        thermo_out equal ${Nevery}*${Nrepeat}
+

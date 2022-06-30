@@ -31,6 +31,10 @@ variable	    vshear equal 0.0
 
 # Equilibration input ---------------------
 variable        respa_style index 0                  # RESPA style run
+variable        nvt_fix index 0
+variable        npt_fix index 0
 
 # Sampling ----------
-variable        thermo_out equal 1000
+variable        Nevery equal 10
+variable        Nrepeat equal 100
+variable        thermo_out equal ${Nevery}*${Nrepeat}

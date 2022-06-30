@@ -3,10 +3,10 @@
 
 # Forces before applying the damping
 fix             fAtomU group_rigidU store/force
-fix             fAtomU_avg group_rigidU ave/atom 10 100 ${thermo_out} f_fAtomU[*]
+fix             fAtomU_avg group_rigidU ave/atom ${Nevery} ${Nrepeat} ${thermo_out} f_fAtomU[*]
 
 fix             fAtomL group_rigidL store/force
-fix             fAtomL_avg group_rigidL ave/atom 10 100 ${thermo_out} f_fAtomL[*]
+fix             fAtomL_avg group_rigidL ave/atom ${Nevery} ${Nrepeat} ${thermo_out} f_fAtomL[*]
 
 # Lower surface atoms do not experience any force (rigid)
 # While the upper walls are loaded with Pext

@@ -7,10 +7,10 @@ write_once("In Init") {
     # Initialization file
     #---------------------
     dimension       3
-    boundary        p p m
+    boundary        p p p
     units           real
     atom_style      molecular
-    pair_style      lj/cut 10.0
+    pair_style      lj/cut 14.0
     pair_modify     shift yes mix geometric
     bond_style      harmonic
     angle_style     harmonic
@@ -25,17 +25,8 @@ write_once("In Groups"){
     #----------------------
 
     group           group_fluid type @atom:CH3 @atom:CH2
-    group           group_solid type @atom:au
 
-    # The walls
-    region          lower block INF INF INF INF INF \$\{half_h\} units box
-    region          upper block INF INF INF INF \$\{half_h\} INF units box
-    group           group_lower region lower
-    group           group_upper region upper
-    group           group_surfL intersect group_solid group_lower
-    group           group_surfU intersect group_solid group_upper
 }
-
 
 write_once("In Settings") {
     # Potential definition file
@@ -48,12 +39,8 @@ write_once("In Settings") {
     variable        epsCH2 equal 0.0914  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
     variable        eps_f equal (2*\$\{mCH3\}*\$\{epsCH3\}+(\$\{nCHx\}-2)*\$\{mCH2\}*\$\{epsCH2\})/\$\{mFluid\}
 
-    variable        sigma_s equal 2.655
-    variable        eps_s equal \$\{eps_f\}*25
-
     pair_coeff      @atom:CH3 @atom:CH3 \$\{epsCH3\} \$\{sigmaCH3\}
     pair_coeff      @atom:CH2 @atom:CH2 \$\{epsCH2\} \$\{sigmaCH2\}
-    pair_coeff      @atom:au @atom:au \$\{eps_s\} \$\{sigma_s\}
 
     bond_coeff      @bond:saturated 1000 1.54
     angle_coeff     @angle:backbone 124.199 114
@@ -66,30 +53,16 @@ write_once("In Run"){
     #--------------------
 
     # Timestep settings
-    neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid
+    neigh_modify    every 1 delay 0 check yes
     timestep        \$\{timestep\}
 
     # Initialize velocities --------------------------------
 
-    # Set Zero velocity for solid
-    velocity        group_solid set 0.0 0.0 0.0
     # Initialize fluid atoms velocities
     velocity        group_fluid create \$\{temp\} 4928459 dist gaussian
 
-    # Forces in the upper wall (from interaction with the liquid)
-    fix             fAtomU group_surfU store/force
-    fix             fAtomU_avg group_surfU ave/atom 10 100 \$\{thermo_out\} f_fAtomU[*]
-
-    fix             fAtomL group_surfL store/force
-    fix             fAtomL_avg group_surfL ave/atom 10 100 \$\{thermo_out\} f_fAtomL[*]
-
-    # Lower surface atoms do not experience any force (rigid)
-    fix             rigid group_solid setforce 0.0 0.0 0.0
-
     # Time integration --------------------------------
 
-    # Solid atoms sample the Microcanonical ensemble
-    fix             nveS group_solid nve
     # Fluid is thermostated with Berendsen thermostat (1st equilibration)
     fix             nveF group_fluid nve/limit 0.1
     fix             berendsen group_fluid temp/berendsen \$\{temp\} \$\{temp\} \$(dt*100)
@@ -98,9 +71,9 @@ write_once("In Run"){
     include         blocks/system.in.virial
 
     # Average atomic properties
-    fix             position all ave/atom 10 100 \$\{thermo_out\} x y z
-    fix             velocity all ave/atom 10 100 \$\{thermo_out\} vx vy vz
-    fix             force all ave/atom 10 100 \$\{thermo_out\} fx fy fz
+    fix             position all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} x y z
+    fix             velocity all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} vx vy vz
+    fix             force all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} fx fy fz
 
     # Thermodynamic output --------------------------------
 
@@ -108,23 +81,32 @@ write_once("In Run"){
     thermo          \$\{thermo_out\}
     thermo_modify   flush yes
 
-    dump            nvt all netcdf \$\{thermo_out\} out/nvt.nc id type x y z vx vy vz fx fy fz &
-							                               f_position[1] f_position[2] f_position[3] &
+    dump            equilib all netcdf \$\{thermo_out\} out/equilib.nc id type x y z vx vy vz fx fy fz &
+							   f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
-                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
-                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
+						           f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
     run             10000
     unfix           nveF
     unfix           berendsen
 
-    # Fluid is thermostated with Nose-Hoover thermostat (2nd equilibration)
-    fix             nvt group_fluid nvt temp \$\{temp\} \$\{temp\} \$(dt*100)
+    # Fluid is thermostated with Nose-Hoover thermostat (2nd equilibration) and Gauchi integrator
+    # Change timestep size if needed    
+    timestep        1
+    #fix             trigo group_fluid trigonometric
+    if "${nvt_fix}==1" then &    
+    "fix             nvt group_fluid nvt/trigo temp \$\{temp\} \$\{temp\} \$(dt*100)" &
+    elif "${npt_fix}==1" &
+    "fix             barostat group_fluid npt/trigo temp \$\{temp\} \$\{temp\} 100.0 iso \$\{press\} \$\{press\} 1000.0"
 
-    run             500000
-    write_data      out/data.nvt nocoeff
+    run             1000000
+
+    if "${nvt_fix}==1" then &
+    "write_data      out/data.nvt nocoeff" &
+    elif "${npt_fix}==1" &
+    "write_data      out/data.npt nocoeff"
 }
 
 
@@ -134,6 +116,6 @@ write_once("In Virial"){
 
     # Get the virial pressure in the fluid
     compute         Wi group_fluid stress/atom NULL
-    fix             Wi_avg group_fluid ave/atom 10 100 \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3]
+    fix             Wi_avg group_fluid ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3] c_Wi[4] c_Wi[5] c_Wi[6]
 }
 # end of system setup

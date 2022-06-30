@@ -78,10 +78,10 @@ write_once("In Run"){
 
     # Forces in the upper wall (from interaction with the liquid)
     fix             fAtomU group_surfU store/force
-    fix             fAtomU_avg group_surfU ave/atom 10 100 \$\{thermo_out\} f_fAtomU[*]
+    fix             fAtomU_avg group_surfU ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} f_fAtomU[*]
 
     fix             fAtomL group_surfL store/force
-    fix             fAtomL_avg group_surfL ave/atom 10 100 \$\{thermo_out\} f_fAtomL[*]
+    fix             fAtomL_avg group_surfL ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} f_fAtomL[*]
 
     # Lower surface atoms do not experience any force (rigid)
     fix             rigid group_solid setforce 0.0 0.0 0.0
@@ -98,9 +98,9 @@ write_once("In Run"){
     include         blocks/system.in.virial
 
     # Average atomic properties
-    fix             position all ave/atom 10 100 \$\{thermo_out\} x y z
-    fix             velocity all ave/atom 10 100 \$\{thermo_out\} vx vy vz
-    fix             force all ave/atom 10 100 \$\{thermo_out\} fx fy fz
+    fix             position all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} x y z
+    fix             velocity all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} vx vy vz
+    fix             force all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} fx fy fz
 
     # Thermodynamic output --------------------------------
 
@@ -109,12 +109,13 @@ write_once("In Run"){
     thermo_modify   flush yes
 
     dump            nvt all netcdf \$\{thermo_out\} out/nvt.nc id type x y z vx vy vz fx fy fz &
-							                               f_position[1] f_position[2] f_position[3] &
+							   f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
                                                            f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                            f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] #f_Vi_avg
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
+                    					   f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6] #f_Vi_avg
 
     run             10000
     unfix           nveF
@@ -134,9 +135,9 @@ write_once("In Virial"){
 
     # Get the virial pressure in the fluid
     #compute         Vi group_fluid voronoi/atom                                     # Get the volume of voronoi cell and number of neighbors
-    #fix             Vi_avg group_fluid ave/atom 10 100 \$\{thermo_out\} c_Vi[1]
+    #fix             Vi_avg group_fluid ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} c_Vi[1]
 
     compute         Wi group_fluid stress/atom NULL
-    fix             Wi_avg group_fluid ave/atom 10 100 \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3]
+    fix             Wi_avg group_fluid ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3] c_Wi[4] c_Wi[5] c_Wi[6]
 }
 # end of system setup

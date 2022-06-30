@@ -40,4 +40,7 @@ variable        M_ps equal ${k}/(${wC}^2)*sqrt(1.0/(${pC}^2)-1.0)               
 variable        damper equal 2*sqrt(${k}*${M_ps})                               # Harmonic oscillator damper
 
 # Sampling -----------------
-variable         thermo_out equal 1000
+variable        Nevery equal 10
+variable        Nrepeat equal 100
+variable        thermo_out equal ${Nevery}*${Nrepeat}
+

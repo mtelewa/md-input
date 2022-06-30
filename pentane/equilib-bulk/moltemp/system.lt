@@ -71,9 +71,9 @@ write_once("In Run"){
     include         blocks/system.in.virial
 
     # Average atomic properties
-    fix             position all ave/atom 10 100 \$\{thermo_out\} x y z
-    fix             velocity all ave/atom 10 100 \$\{thermo_out\} vx vy vz
-    fix             force all ave/atom 10 100 \$\{thermo_out\} fx fy fz
+    fix             position all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} x y z
+    fix             velocity all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} vx vy vz
+    fix             force all ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} fx fy fz
 
     # Thermodynamic output --------------------------------
 
@@ -81,23 +81,29 @@ write_once("In Run"){
     thermo          \$\{thermo_out\}
     thermo_modify   flush yes
 
-    dump            nvt all netcdf \$\{thermo_out\} out/nvt.nc id type x y z vx vy vz fx fy fz &
+    dump            equilib all netcdf \$\{thermo_out\} out/equilib.nc id type x y z vx vy vz fx fy fz &
 							   f_position[1] f_position[2] f_position[3] &
                                                            f_velocity[1] f_velocity[2] f_velocity[3] &
                                                            f_force[1] f_force[2] f_force[3] &
-                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
+                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
+						           f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
     run             10000
     unfix           nveF
     unfix           berendsen
 
     # Fluid is thermostated with Nose-Hoover thermostat (2nd equilibration)
-    fix             nvt group_fluid nvt temp \$\{temp\} \$\{temp\} \$(dt*100)
-    #fix            barostat group_fluid npt temp \$\{temp\} \$\{temp\} 100.0 iso \$\{press\} \$\{press\} 1000.0
+    if "${nvt_fix}==1" then &
+    "fix             nvt group_fluid nvt temp \$\{temp\} \$\{temp\} \$(dt*100)" &
+    elif "${npt_fix}==1" &
+    "fix            barostat group_fluid npt temp \$\{temp\} \$\{temp\} 100.0 iso \$\{press\} \$\{press\} 1000.0"
 
     run             1000000
-    write_data      out/data.nvt nocoeff
-    #write_data      out/data.npt nocoeff
+
+    if "${nvt_fix}==1" then &
+    "write_data      out/data.nvt nocoeff" &
+    elif "${npt_fix}==1" &
+    "write_data      out/data.npt nocoeff"
 }
 
 
@@ -107,6 +113,6 @@ write_once("In Virial"){
 
     # Get the virial pressure in the fluid
     compute         Wi group_fluid stress/atom NULL
-    fix             Wi_avg group_fluid ave/atom 10 100 \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3]
+    fix             Wi_avg group_fluid ave/atom \$\{Nevery\} \$\{Nrepeat\} \$\{thermo_out\} c_Wi[1] c_Wi[2] c_Wi[3] c_Wi[4] c_Wi[5] c_Wi[6]
 }
 # end of system setup

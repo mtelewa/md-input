@@ -23,16 +23,16 @@ compute         PE group_fluid pe/atom
 compute         W group_fluid centroid/stress/atom NULL virial
 variable        TE atom c_KE+c_PE
 
-fix             te group_fluid ave/atom 10 100 ${thermo_out} v_TE[1] v_TE[2] v_TE[3]
-fix             W group_fluid ave/atom 10 100 ${thermo_out} c_W[*]
+fix             te group_fluid ave/atom ${Nevery} ${Nrepeat} ${thermo_out} v_TE[1] v_TE[2] v_TE[3]
+fix             W group_fluid ave/atom ${Nevery} ${Nrepeat} ${thermo_out} c_W[*]
 
 include         blocks/system.in.loadUpper
 include         blocks/system.in.virial
 
 # Average atomic properties
-fix             position all ave/atom 10 100 ${thermo_out} x y z
-fix             velocity all ave/atom 10 100 ${thermo_out} vx vy vz
-fix             force all ave/atom 10 100 ${thermo_out} fx fy fz
+fix             position all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} x y z
+fix             velocity all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} vx vy vz
+fix             force all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} fx fy fz
 
 # Modified Biased thermostating (switch off the x-component velocity of the walls (for shear-driven simulations only))
 if "${couette}==1 || ${both}==1" then &
@@ -96,13 +96,13 @@ thermo          ${thermo_out}
 thermo_modify   flush yes
 
 dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy vz fx fy fz &
-							                              f_position[1] f_position[2] f_position[3] &
+							  f_position[1] f_position[2] f_position[3] &
                                                           f_velocity[1] f_velocity[2] f_velocity[3] &
                                                           f_force[1] f_force[2] f_force[3] &
                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
-                                                          f_te[*] f_W[*] f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
+                                                          f_te[*] f_W[*] f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
 run             5000000
 write_data	    out/data.stabilize nocoeff
