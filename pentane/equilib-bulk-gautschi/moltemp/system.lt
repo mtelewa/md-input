@@ -96,16 +96,16 @@ write_once("In Run"){
     # Change timestep size if needed    
     timestep        1
     fix             trigo group_fluid trigonometric
-    if "${nvt_fix}==1" then &    
+    if "\$\{nvt_fix\}==1" then &    
     "fix             nvt group_fluid nvt temp \$\{temp\} \$\{temp\} \$(dt*100)" &
-    elif "${npt_fix}==1" &
+    elif "\$\{npt_fix\}==1" &
     "fix             barostat group_fluid npt temp \$\{temp\} \$\{temp\} 100.0 iso \$\{press\} \$\{press\} 1000.0"
 
     run             1000000
 
-    if "${nvt_fix}==1" then &
+    if "\$\{nvt_fix\}==1" then &
     "write_data      out/data.nvt nocoeff" &
-    elif "${npt_fix}==1" &
+    elif "\$\{npt_fix\}==1" &
     "write_data      out/data.npt nocoeff"
 }
 
