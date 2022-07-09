@@ -17,4 +17,4 @@ module load mpi/openmpi/4.0
 # Attention:
 # Do NOT add mpirun options -n <number_of_processes> or any other option defining processes or nodes, since MOAB instructs mpirun about number of processes and node hostnames. Moreover, replace <placeholder_for_version> with the wished version of Intel MPI to enable the MPI environment. 
 
-mpirun --bind-to core --map-by core -report-bindings lmp_mpi -in $(pwd)/flow.LAMMPS -v gravity 1 -v fgravity 1e-4 -v Pext 5
+mpirun --bind-to core --map-by core -report-bindings lmp_mpi -in $(pwd)/flow.LAMMPS -v gravity 1 -v Pext 5

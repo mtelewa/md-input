@@ -33,7 +33,7 @@ variable        thickness equal (bound(group_pump_dyn,zmax)-bound(group_pump_dyn
 #-----------Gravity -----------------#
 
 if "${gravity}==1" then &
-"variable       fgravity index 1e-4" &
+"variable       fgravity equal 1e-4" &
 "fix            gravityForce group_fluid addforce v_fgravity 0.0 0.0"
 
 #-----------ff Ensemble -----------------#
