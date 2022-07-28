@@ -39,7 +39,7 @@ if "${ff}==1 && ${smooth_tr}==0 && ${smooth_gauss}==0" then &
 "variable       fp equal v_flowArea*${pDiff}" &
 "compute        fw group_pump_dyn group/group group_vibrating" &
 "variable       fw equal -(c_fw[1])*${kcalpermolA_to_N}" &
-"variable       fpump equal ((v_fw+v_fp)*${N_to_kcalpermolA})/count(group_pump_dyn)" &
+"variable       fpump equal ((-v_fw+v_fp)*${N_to_kcalpermolA})/count(group_pump_dyn)" &
 "fix            pumpForce group_pump_dyn addforce v_fpump 0.0 0.0"
 
 #-----------fc Ensemble-------------#
