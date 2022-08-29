@@ -88,8 +88,7 @@ dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy v
                                                           f_position[1] f_position[2] f_position[3] &
                                                           f_velocity[1] f_velocity[2] f_velocity[3] &
                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
-					                  f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
-
+					                                      f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
 
 run             5000000
