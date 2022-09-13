@@ -1,0 +1,1 @@
+Parameters : Namespace(nUnitsX=120, nUnitsY=10, nUnitsZ=1, h=60.0, density=0.6788, name='pentane', code='lammps')
