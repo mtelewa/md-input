@@ -13,14 +13,15 @@ fix             nve group_solid nve
 fix             nvt group_fluid nvt temp ${temp} ${temp} $(dt*100)
 compute         tempFluid group_fluid temp
 # Ensure that atoms do not drift during the simulation due to random perturbations
-fix             recenter group_surfL recenter INIT INIT INIT shift all
+if "${couette}==0" then &
+"fix             recenter group_surfL recenter INIT INIT INIT shift all"
 
 include         blocks/system.in.loadUpper
 include         blocks/system.in.virial
 
-fix             position all ave/atom 10 100 ${thermo_out} x y z
-fix             velocity all ave/atom 10 100 ${thermo_out} vx vy vz
-fix             force all ave/atom 10 100 ${thermo_out} fx fy fz
+fix             position all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} x y z
+fix             velocity all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} vx vy vz
+#fix             force all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} fx fy fz
 
 # Modified Biased thermostating (switch off the streaming velocity off)
 compute         pbt group_fluid temp/partial 0 1 0
@@ -73,8 +74,8 @@ if "${fc}==1" then &
 
 #------------Couette flow -----------------#
 if "${couette}==1 && ${both}==0" then &
-"velocity       group_surfL set NULL NULL NULL" &
-"velocity       group_surfU set ${vshear} 0.0 0.0 units box" &
+"velocity       group_surfU set NULL NULL NULL" &
+"velocity       group_surfL set ${vshear} 0.0 0.0 units box" &
 elif "${couette}==1 && ${both}==1" &
 "unfix		recenter" &
 "variable       vshear_half equal 0.5*${vshear}" &
@@ -83,31 +84,30 @@ elif "${couette}==1 && ${both}==1" &
 
 # Thermodynamic Output --------------------------------
 if "${ff}==1" then &
-"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fw v_fp v_fpump" &
+"thermo_style    custom step c_tempFluid ke epair etotal density vol press v_nAtomsPump v_fw v_fp v_fpump" &
 else &
-"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump"
+"thermo_style    custom step c_tempFluid ke epair etotal density vol press v_nAtomsPump"
+
 
 thermo          ${thermo_out}
 thermo_modify   flush yes
 
-dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy vz fx fy fz &
-                                                                                      f_position[1] f_position[2] f_position[3] &
+dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy vz &
+                                                          f_position[1] f_position[2] f_position[3] &
                                                           f_velocity[1] f_velocity[2] f_velocity[3] &
-                                                          f_force[1] f_force[2] f_force[3] &
-                                                          f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
-                                                          f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
+                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
+                                                                              f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
 
 
 run             5000000
 write_data	    out/data.stabilize nocoeff
 
-run             10000000
+run             15000000
 write_data      out/data1.flow
 
-run             10000000
+run             15000000
 write_data      out/data2.flow
 
-run             10000000
+run             15000000
 write_data      out/data3.flow
