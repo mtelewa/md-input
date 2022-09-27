@@ -1,8 +1,7 @@
 #!/bin/sh
 
 # Run Moltemplate
-moltemp='/home/mohamed/programs/moltemplate/moltemplate/scripts/moltemplate.sh'
-$moltemp system.lt -atomstyle molecular -overlay-bonds -overlay-angles -overlay-dihedrals -overlay-impropers
+moltemplate.sh system.lt -atomstyle molecular -overlay-bonds -overlay-angles -overlay-dihedrals -overlay-impropers
 
 rm -r output_ttree
 mv system.in.* ../blocks
