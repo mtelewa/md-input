@@ -125,7 +125,7 @@ write_once("In Run"){
     fix             nvt group_fluid nvt temp \$\{temp\} \$\{temp\} \$(dt*100)
 
     run             500000
-    write_data      out/data.nvt nocoeff
+    write_data      out/data.equilib nocoeff
 }
 
 

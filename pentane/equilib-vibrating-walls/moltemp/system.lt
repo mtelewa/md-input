@@ -138,7 +138,7 @@ write_once("In Run"){
     unfix           berendsenF
 
     run             2000000
-    write_data      out/data.nvt nocoeff
+    write_data      out/data.equilib nocoeff
 }
 
 

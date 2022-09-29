@@ -100,10 +100,7 @@ write_once("In Run"){
 
     run             1000000
 
-    if "\$\{nvt_fix\}==1" then &
-    "write_data      out/data.nvt nocoeff" &
-    elif "\$\{npt_fix\}==1" &
-    "write_data      out/data.npt nocoeff"
+    write_data      out/data.equilib nocoeff
 }
 
 
