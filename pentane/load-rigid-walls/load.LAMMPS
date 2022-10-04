@@ -5,7 +5,7 @@
 include         blocks/system.in.init
 
 # Atom Definition Section -----------------
-read_data       blocks/data.nvt
+read_data       blocks/data.equilib
 
 # Header file -----------------
 include 	    blocks/header.LAMMPS
