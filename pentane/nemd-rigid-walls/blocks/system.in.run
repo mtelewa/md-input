@@ -94,14 +94,14 @@ dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy v
 
 
 
-run             5000000
+run             5000
 write_data	    out/data.stabilize nocoeff
 
-run             10000000
+run             10000
 write_data      out/data1.flow
 
-run             10000000
+run             10000
 write_data      out/data2.flow
 
-run             10000000
+run             10000
 write_data      out/data3.flow
