@@ -124,7 +124,7 @@ write_once("In Run"){
     # Fluid is thermostated with Nose-Hoover thermostat (2nd equilibration)
     fix             nvt group_fluid nvt temp \$\{temp\} \$\{temp\} \$(dt*100)
 
-    run             10000
+    run             500000
     write_data      out/data.equilib nocoeff
 }
 
