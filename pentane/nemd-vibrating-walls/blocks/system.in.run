@@ -85,27 +85,58 @@ elif "${couette}==1 && ${both}==1" &
 "velocity       group_surfL set -${vshear_half} 0.0 0.0 units box" &
 "velocity       group_surfU set ${vshear_half} 0.0 0.0 units box"
 
+######################################
+
+# Add momentum flux terms
+variable                inlet_start equal 0.97*lx
+variable                box_end equal lx
+variable                outlet_end equal ${pumpEnd}+(0.03*lx)
+
+region                  inlet block ${inlet_start} ${box_end} INF INF INF INF units box
+region                  outlet block ${pumpEnd} ${outlet_end} INF INF INF INF units box
+
+variable                energyAtom atom 0.5*(mass/${N_A})*1e-3*vx*vx*1e10               # kg * m^2/s^2 (= J)
+
+# Total energy and total force in the inlet region
+compute                 energy_in group_fluid reduce/region inlet sum v_energyAtom
+variable                Fin equal c_energy_in*${N_to_kcalpermolA}/(0.03*lx*1e-10)            # kg * m/s^2 (= N)
+# Total energy and total force in the outlet region
+compute                 energy_out group_fluid reduce/region outlet sum v_energyAtom
+variable                Fout equal c_energy_out*${N_to_kcalpermolA}/(0.03*lx*1e-10)            # kg * m/s^2 (= N)
+
+fix                     mom_fluxes group_fluid ave/time 1 1 1 v_Fin v_Fout ave window 500000
+variable                net_mom_flux equal (f_mom_fluxes[2]-f_mom_fluxes[1])/count(group_pump_dyn)
+
+######################################
 
 # Thermodynamic Output --------------------------------
 if "${ff}==1" then &
-"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fw v_fp v_fpump" &
+"thermo_style    custom step c_tempFluid f_nvt ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump v_fw v_fp v_fpump v_Fin v_Fout v_net_mom_flux" &
 else &
-"thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump"
+"thermo_style    custom step c_tempFluid f_nvt ke epair ebond eangle edihed eimp pe etotal density vol press v_nAtomsPump"
 
 thermo          ${thermo_out}
 thermo_modify   flush yes
 
 dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy vz fx fy fz &
-							  f_position[1] f_position[2] f_position[3] &
+                                                          f_position[1] f_position[2] f_position[3] &
                                                           f_velocity[1] f_velocity[2] f_velocity[3] &
                                                           f_force[1] f_force[2] f_force[3] &
                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3]
-                                                          f_te[*] f_W[*] f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
+                                                          f_te[*] f_W[*] &
+                                                          f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
+                                                          f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
+
 
 run             5000000
-write_data	    out/data.stabilize nocoeff
+write_data             out/data.stabilize nocoeff
+
+unfix                  pumpForce
+variable               total_force equal v_net_mom_flux+v_fpump
+fix                    mom_flux_force group_pump_dyn addforce v_total_force 0.0 0.0
+
+run             5000000
 
 run             10000000
 write_data      out/data1.flow
