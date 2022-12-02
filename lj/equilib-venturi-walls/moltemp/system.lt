@@ -95,7 +95,7 @@ write_once("In Run"){
 
     # Thermodynamic output --------------------------------
 
-    thermo_style    custom step c_tempFluid ke epair ebond eangle edihed eimp pe etotal density vol press
+    thermo_style    custom step c_tempFluid ke epair pe etotal density vol press
     thermo          \$\{thermo_out\}
     thermo_modify   flush yes
 
@@ -109,10 +109,12 @@ write_once("In Run"){
 							   f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
     run             60000
-
+    
+    unfix	    nveF
     unfix           berendsenF
-
-    run             2000000
+    fix             nvt group_fluid nvt \$\{temp\} \$\{temp\} \$(dt*100)
+    
+     run             1000000
     write_data      out/data.nvt nocoeff
 }
 
