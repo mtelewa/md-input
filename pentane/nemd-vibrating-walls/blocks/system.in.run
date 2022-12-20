@@ -21,10 +21,21 @@ fix             recenter group_surfL recenter INIT INIT INIT shift all
 compute         KE group_fluid ke/atom
 compute         PE group_fluid pe/atom
 compute         W group_fluid centroid/stress/atom NULL virial
-variable        TE atom c_KE+c_PE
 
-fix             te group_fluid ave/atom ${Nevery} ${Nrepeat} ${thermo_out} v_TE[1] v_TE[2] v_TE[3]
-fix             W group_fluid ave/atom ${Nevery} ${Nrepeat} ${thermo_out} c_W[*]
+# Heat flux computation (Post-processing)
+compute         KE group_fluid ke/atom
+compute         PE group_fluid pe/atom
+compute         W group_fluid centroid/stress/atom NULL virial
+
+variable        sv1 atom -v_N_A*v_atmA3_to_kcal*((c_W[1]*vx)+(c_W[4]*vy)+(c_W[5]*vz))
+variable        sv2 atom -v_N_A*v_atmA3_to_kcal*((c_W[7]*vx)+(c_W[2]*vy)+(c_W[6]*vz))
+variable        sv3 atom -v_N_A*v_atmA3_to_kcal*((c_W[8]*vx)+(c_W[9]*vy)+(c_W[3]*vz))
+variable        ev1 atom (c_KE+c_PE)*vx
+variable        ev2 atom (c_KE+c_PE)*vy
+variable        ev3 atom (c_KE+c_PE)*vz
+
+fix             sv group_fluid ave/atom ${Nevery} ${Nrepeat} ${thermo_out} v_sv1 v_sv2 v_sv3
+fix             ev group_fluid ave/atom ${Nevery} ${Nrepeat} ${thermo_out} v_ev1 v_ev2 v_ev3
 
 include         blocks/system.in.loadUpper
 include         blocks/system.in.virial
@@ -124,7 +135,7 @@ dump            flow all netcdf ${thermo_out} out/flow.nc id type  x y z vx vy v
                                                           f_force[1] f_force[2] f_force[3] &
                                                           f_fAtomU_avg[1] f_fAtomU_avg[2] f_fAtomU_avg[3] &
                                                           f_fAtomL_avg[1] f_fAtomL_avg[2] f_fAtomL_avg[3] &
-                                                          f_te[*] f_W[*] &
+                                                          f_sv[*] f_ev[*] &
                                                           f_Wi_avg[1] f_Wi_avg[2] f_Wi_avg[3] &
                                                           f_Wi_avg[4] f_Wi_avg[5] f_Wi_avg[6]
 
