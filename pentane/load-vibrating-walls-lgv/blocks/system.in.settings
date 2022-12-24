@@ -5,7 +5,6 @@
     variable        epsCH3 equal 0.195  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
     variable        sigmaCH2 equal 3.93  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
     variable        epsCH2 equal 0.0914  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
-    variable        eps_f equal (2*${mCH3}*${epsCH3}+(${nCHx}-2)*${mCH2}*${epsCH2})/${mFluid}
 
     variable        sigma_s equal 2.655         # J. Phys. Chem. C 2008, 112, 17281–17290
     variable        eps_s equal 5.29   # J. Phys. Chem. C 2008, 112, 17281–17290, in kcal/mol
