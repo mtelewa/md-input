@@ -1,6 +1,6 @@
     # Group definition file
     #----------------------
-
+    
     group           group_fluid type 1 2
     group           group_solid type 3
 
@@ -25,4 +25,3 @@
     region          stable block ${stableStartX} ${stableEndX} INF INF INF INF units box
     group           group_stable_dyn dynamic group_fluid region stable
     variable        nAtomsStable equal count(group_stable_dyn)
-

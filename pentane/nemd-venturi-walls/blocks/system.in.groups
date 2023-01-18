@@ -1,6 +1,8 @@
     # Group definition file
     #----------------------
 
+    group           group_CH3 type 1
+    group           group_CH2 type 2
     group           group_fluid type 1 2
     group           group_solid type 3
     variable        nAtomsFluid equal count(group_fluid)
@@ -16,4 +18,6 @@
     # Pump region
     region          pump block ${pumpStart} ${pumpEnd} INF INF INF INF units box
     group           group_pump_dyn dynamic group_fluid region pump
+    group           group_CH3_pump dynamic group_CH3 region pump
+    group           group_CH2_pump dynamic group_CH2 region pump
     variable        nAtomsPump equal count(group_pump_dyn)
