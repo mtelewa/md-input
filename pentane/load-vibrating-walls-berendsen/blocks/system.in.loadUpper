@@ -1,0 +1,30 @@
+#  Loading the Upper wall and measuring the stress in the walls
+# -------------------------------------------------------------
+
+# Forces before applying the damping
+fix             fAtomU group_rigidU store/force
+fix             fAtomU_avg group_rigidU ave/atom ${Nevery} ${Nrepeat} ${thermo_out} f_fAtomU[*]
+
+fix             fAtomL group_rigidL store/force
+fix             fAtomL_avg group_rigidL ave/atom ${Nevery} ${Nrepeat} ${thermo_out} f_fAtomL[*]
+
+# Lower surface atoms do not experience any force (rigid)
+# While the upper walls are loaded with Pext
+fix             setforce group_rigidU setforce 0.0 0.0 NULL
+fix             rigid group_rigidL setforce 0.0 0.0 0.0
+
+# Damping force (Tribol Lett (2010) 39:49–61)
+variable        nU equal count(group_rigidU)
+variable        massU equal ${nU}*${mSolid}                                     # Mass of Upper wall
+variable        scale equal (${massU}/${M_ps})/(4184e-7)                        # real mass/Mass of imaginary piston (Prefactor to convert from kcal to J and fs^2/g.A^2 to J^-1)
+
+compute         velatomU group_rigidU property/atom vz
+compute         velU group_rigidU reduce ave c_velatomU
+variable        dampforce equal -${damper}*c_velU                               # Damping Force per atom
+
+variable        atomForceZ equal -${Pext}*lx*ly*${mpa_to_kcalpermolA3}/${nU}+v_dampforce  # Force per atom in Kcal/mol.A = Load+Damper
+fix             loadU group_rigidU aveforce 0.0 0.0 v_atomForceZ
+
+variable        Fz equal fcm(group_rigidU,z)                                  # Total force on the upper surface
+variable        fscale equal v_Fz*${scale}/${nU}                             # Fz per atom scaled by mass-ratio
+fix             Fscale group_rigidU setforce 0.0 0.0 v_fscale                 # set normal force to scaled value (KCal/mol.A)
