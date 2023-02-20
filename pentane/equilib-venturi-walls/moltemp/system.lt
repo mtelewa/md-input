@@ -50,7 +50,7 @@ write_once("In Settings") {
     variable        eps_f equal (2*\$\{mCH3\}*\$\{epsCH3\}+(\$\{nCHx\}-2)*\$\{mCH2\}*\$\{epsCH2\})/\$\{mFluid\}
 
     variable        sigma_s equal 2.655         # J. Phys. Chem. C 2008, 112, 17281–17290
-    variable        eps_s equal \$\{eps_f\}*25     # In J. Phys. Chem. C 2008, 112, 17281–17290 , eps_s = 5.29 kcal/mol. Here it is 3.36 Kcal/mol. Need to be changed later..
+    variable        eps_s equal 5.29     # J. Phys. Chem. C 2008, 112, 17281–17290 (kcal/mol)
 
     pair_coeff      @atom:CH3 @atom:CH3 \$\{epsCH3\} \$\{sigmaCH3\}
     pair_coeff      @atom:CH2 @atom:CH2 \$\{epsCH2\} \$\{sigmaCH2\}
