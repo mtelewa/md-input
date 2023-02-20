@@ -24,6 +24,7 @@ compute         W group_fluid centroid/stress/atom NULL virial
 
 variable        atmA3_to_kcal equal 0.02388*1e-27
 
+# TODO: Replace with peculiar velocities!
 variable        sv1 atom -v_N_A*v_atmA3_to_kcal*((c_W[1]*vx)+(c_W[4]*vy)+(c_W[5]*vz))
 variable        sv2 atom -v_N_A*v_atmA3_to_kcal*((c_W[7]*vx)+(c_W[2]*vy)+(c_W[6]*vz))
 variable        sv3 atom -v_N_A*v_atmA3_to_kcal*((c_W[8]*vx)+(c_W[9]*vy)+(c_W[3]*vz))
