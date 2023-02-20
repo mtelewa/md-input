@@ -15,7 +15,11 @@ fix		        nveS group_solid nve
 fix             nvt group_vibrating langevin ${temp} ${temp} $(dt*100) 154323 tally yes
 compute         tempFluid group_fluid temp
 # Ensure that atoms do not drift during the simulation due to random perturbations
-fix             recenter group_surfL recenter INIT INIT INIT shift all
+if "${couette}==0" then &
+"fix             recenter group_surfL recenter INIT INIT INIT shift all"
+
+include         blocks/system.in.loadUpper
+include         blocks/system.in.virial
 
 # Heat flux computation (Post-processing)
 compute         KE group_fluid ke/atom
