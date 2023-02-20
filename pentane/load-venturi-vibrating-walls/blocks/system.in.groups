@@ -1,0 +1,23 @@
+# Group definition file
+#----------------------
+
+group           group_fluid type 1 2
+group           group_solid type 3
+
+# The Walls
+region          lower block INF INF INF INF INF ${half_h} units box
+region          upper block INF INF INF INF ${half_h} INF units box
+group           group_lower region lower
+group           group_upper region upper
+group           group_surfL intersect group_solid group_lower
+group           group_surfU intersect group_solid group_upper
+
+region          rigidL block INF INF INF INF INF ${rigidL_end}
+region          rigidU block INF INF INF INF ${rigidU_begin} INF
+group           group_rigidL region rigidL
+group           group_rigidU region rigidU
+group           group_rigid union group_rigidL group_rigidU
+
+group           group_walls union group_surfU group_surfL
+group           group_vibrating subtract group_walls group_rigid
+

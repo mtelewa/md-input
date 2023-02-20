@@ -1,0 +1,20 @@
+# LAMMPS script fo NEMD loading
+#------------------------------
+
+# Init Section -----------------
+include         blocks/system.in.init
+
+# Atom Definition Section -----------------
+read_data       blocks/data.equilib
+
+# Header file -----------------
+include 	    blocks/header.LAMMPS
+
+# Groups Section -----------------
+include         blocks/system.in.groups
+
+# Settings Section -----------------
+include         blocks/system.in.settings
+
+# Run Section -----------------
+include         blocks/system.in.run

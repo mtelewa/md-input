@@ -1,0 +1,78 @@
+# Initialize gold walls
+#----------------------
+
+include	       blocks/system.in.init
+
+variable       xlength equal 359.78
+variable       Boffset equal 1.0                          # Initial offset bet. the block and the simulation box
+variable       zlength equal 99.00
+variable       upper equal ${zlength}-${Boffset}
+
+# Create Box --------------------------------
+region          box block 0.0 359.78 0.0 28.85 -1.00 99.00 units box
+create_box      1 box
+
+mass            1 ${mSolid}
+variable        sigma_s equal 2.655
+variable        eps_s equal 5.29
+pair_coeff      1 1 ${eps_s} ${sigma_s}
+
+# Create Walls ------------------------------
+# First build the flat Walls
+lattice         fcc ${ls} orient x -1 2 -1 orient y -1 0 1 orient z 1 1 1
+
+region          surfL block 1e-5 INF INF INF -1e-5 14.00 units box
+region          surfU block 1e-5 INF INF INF 84.00 98.00 units box
+
+create_atoms    1 region surfU
+create_atoms    1 region surfL
+
+group 		surfL region surfL
+group           surfU region surfU
+
+# Create Sine Wave (variable names from: https://www.desmos.com/calculator/w9jrdpvsmk)
+variable        th equal 14.00
+variable        k equal v_zlength-2*${th}-2*${Boffset}            # gap height
+
+# variables to change: Amplitude, Width and x-shift
+variable        amplitude index 0.5
+variable        width index 0.4
+variable        xshift index 0.3
+
+variable        a equal v_amplitude*v_zlength-2*${th}-2*${Boffset}         # amplitude as a factor of zlength, amplitude is the gap height
+variable        b equal v_width*v_xlength                                  # width of the sine wave
+variable        h equal v_xshift*v_xlength                                 # phase shift of the wave
+# iteration parameters
+variable        xx internal 0.0
+variable        zz internal 0.0
+
+# Lower Wall
+variable        v equal "(v_a * sin((v_xx-v_h)*PI / v_b) + v_th - v_zz ) > 0.0"
+create_atoms    1 box var v set x xx set z zz
+variable        vv atom "(v_a * sin((x-v_h)*PI / v_b) + v_th - z ) > 0.0"
+
+group		discontL variable vv
+group		overlapL intersect discontL surfL
+
+# Upper Wall
+variable        q equal "(v_a * sin((v_xx-v_h+v_b)*PI / v_b) + (v_th+v_k) - v_zz ) < 0.0 "
+create_atoms    1 box var q set x xx set z zz
+variable	qq atom "(v_a * sin((x-v_h+v_b)*PI / v_b) + (v_th+v_k) - z ) < 0.0 "
+
+group           discontU variable qq
+group           overlapU intersect discontU surfU
+
+group		overlap union overlapL overlapU
+delete_atoms	group overlap
+
+variable        surfL_conv_end equal 0.32*lz
+variable        surfU_conv_end equal 0.65*lz
+variable        surfU_div_begin equal 84.00
+region          cut2 block INF INF INF INF ${surfL_conv_end} ${surfU_conv_end} units box
+region          cut3 block INF INF INF INF ${upper} INF units box
+group           group_cut2 region cut2
+group           group_cut3 region cut3
+group           group_cut23 union group_cut2 group_cut3
+delete_atoms    group group_cut23 compress no # Keep the atom ids
+
+write_data	moltemp/data.init nocoeff

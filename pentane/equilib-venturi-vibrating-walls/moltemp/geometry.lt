@@ -1,0 +1,29 @@
+ # System moltemplate file
+    #------------------------
+    
+    # import molecule building block file
+    import 'pentane.lt' 
+    
+    mol = new pentane   [35].move(10,0,0) 
+                       [7].move(0,4,0) 
+                       [16].move(0,0,3) 
+    
+    # delete mol[2-17][0-7][0-2] 
+    delete mol[12-22][0-7][0-4]
+    delete mol[12-22][0-7][15]
+    delete mol[11][0-7][0]
+    delete mol[23][0-7][0]   
+ 
+    # import wall building block file
+    import 'gold_all.lt'  
+    
+    gold = new au   
+    
+    # Shift the fluid atoms from the box center 
+    mol[*][*][*].move(10,1.0,20.0) 
+    
+    write_once('Data Boundary'){ 
+     0    359.7810534199932    xlo xhi 
+     0    28.849956672411142    ylo yhi 
+    -1.0  99.0   zlo zhi 
+    }
