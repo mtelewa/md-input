@@ -79,14 +79,9 @@ delete_atoms    group group_cut5 compress no # Keep the atom ids
 # Define atomic properties
 mass            1 ${mSolid}
 
-variable        sigmaCH3 equal 3.75  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
-variable        epsCH3 equal 0.195  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
-variable        sigmaCH2 equal 3.93  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
-variable        epsCH2 equal 0.0914  # LJ parameters for n-alkanes (TraPPE - Siepmann 1998)
-variable        eps_f equal (2*${mCH3}*${epsCH3}+(${nCHx}-2)*${mCH2}*${epsCH2})/${mFluid}
 variable        sigma_s equal 2.655
-variable        eps_s equal ${eps_f}*25
+variable        eps_s equal 5.29
 
 pair_coeff      1 1 ${eps_s} ${sigma_s}
 
-write_data	    moltemp/data.init
+write_data	moltemp/data.init
