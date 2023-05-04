@@ -18,9 +18,6 @@ compute         tempFluid group_fluid temp
 if "${couette}==0" then &
 "fix             recenter group_surfL recenter INIT INIT INIT shift all"
 
-include         blocks/system.in.loadUpper
-include         blocks/system.in.virial
-
 # Heat flux computation (Post-processing)
 compute         KE group_fluid ke/atom
 compute         PE group_fluid pe/atom
