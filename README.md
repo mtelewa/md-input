@@ -1,4 +1,4 @@
-# Molecular Dynamics simulation input files of either a fluid confined between solid walls or a bulk fluid
+# Molecular Dynamics simulation input files
 
 # Required packages:
 * [Moltemplate](https://moltemplate.org/)
