@@ -2,7 +2,7 @@
 #--------------------
 
 # Timestep settings
-neigh_modify    every 1 delay 0 check yes exclude group group_solid group_solid   #  interactions between those atoms can be turned off to save needless computation
+neigh_modify    every 1 delay 0 check yes exclude group group_rigid group_rigid   #  interactions between those atoms can be turned off to save needless computation
 timestep        ${timestep}
 
 # Set Zero velocity for solid
