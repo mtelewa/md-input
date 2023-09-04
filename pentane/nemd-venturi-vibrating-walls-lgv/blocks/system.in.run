@@ -10,8 +10,9 @@ velocity        group_solid set 0.0 0.0 0.0
 # Integrate the solid atoms in time (Microcanonical ensemble)
 fix             nveF group_fluid nve
 fix             nveS group_solid nve
+
 # Profile-Biased thermostating
-fix             nvt group_vibrating langevin ${temp} ${temp} $(dt*100) 154323 tally yes
+fix             nvt group_vibrating langevin ${temp} ${temp} $(dt*100) 154323
 compute         tempFluid group_fluid temp
 # Ensure that atoms do not drift during the simulation due to random perturbations
 if "${couette}==0" then &
@@ -23,10 +24,6 @@ include         blocks/system.in.virial
 fix             position all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} x y z
 fix             velocity all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} vx vy vz
 #fix             force all ave/atom ${Nevery} ${Nrepeat} ${thermo_out} fx fy fz
-
-# Modified Biased thermostating (switch off the streaming velocity off)
-compute         pbt group_fluid temp/partial 0 1 0
-fix_modify      nvt temp pbt                      # exclude the x-velocity component from Temperature computation
 
 # Get the channel thickness
 variable        thickness equal (bound(group_pump_dyn,zmax)-bound(group_pump_dyn,zmin)+bound(group_surfU,zmin)-bound(group_surfL,zmax))/2

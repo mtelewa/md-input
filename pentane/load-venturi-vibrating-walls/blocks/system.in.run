@@ -16,9 +16,9 @@ velocity        group_solid set 0.0 0.0 0.0
 fix             nveF group_fluid nve
 fix             nveS group_solid nve
 
-# Profile-Biased Nose'-Hoover thermostat
 fix             nvt group_vibrating langevin ${temp} ${temp} $(dt*100) 154323
 compute         tempFluid group_fluid temp
+
 # Ensure that atoms do not drift during the simulation due to random perturbations
 fix             recenter group_surfL recenter INIT INIT INIT shift all
 

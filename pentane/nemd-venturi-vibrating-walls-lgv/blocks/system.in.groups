@@ -15,7 +15,7 @@
     group           group_surfL intersect group_solid group_lower
     group           group_surfU intersect group_solid group_upper
 
-    variable        SurfUcom equal xcm(group_surfU,z)
+    variable        SurfUcom equal 94 #xcm(group_surfU,z)
 
     region          rigidL block INF INF INF INF INF ${rigidL_end}
     region          rigidU block INF INF INF INF ${SurfUcom} INF
